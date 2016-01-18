@@ -2,7 +2,7 @@
 
 A simple Node.js logger. Very closely attached to a request.
 
-![]()
+![](https://raw.githubusercontent.com/Knorcedger/reqlog/master/Screenshot.png)
 
 ## Installation
 
