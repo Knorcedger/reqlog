@@ -21,7 +21,7 @@ npm install reqlog --save
 
 ## Usage
 
-```sh
+```javascript
 var reqlog = require('reqlog');
 reqlog.log('Endpoint', 'users/search');
 reqlog.warn('UserSearch', 'NOT_FOUND');
@@ -31,7 +31,7 @@ reqlog.info('Success');
 
 ### Complete example
 
-```
+```javascript
 var http = require('http');
 var reqlog = require('reqlog');
 
