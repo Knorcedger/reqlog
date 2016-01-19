@@ -2,6 +2,8 @@
 
 const chalk = require('chalk');
 
+var useTypeLabels = false;
+
 /**
  * Beutifies the log data and logs!
  * @method log
@@ -11,24 +13,43 @@ const chalk = require('chalk');
  */
 function log(type, label, data) {
 	var typeLabel = type.charAt(0).toUpperCase() + type.slice(1);
+	var color;
 
 	if (typeLabel === 'Error') {
 		typeLabel = chalk.red(typeLabel);
+		color = 'red';
 	} else if (typeLabel === 'Warn') {
 		typeLabel = chalk.yellow(typeLabel);
+		color = 'yellow';
 	} else if (typeLabel === 'Info') {
 		typeLabel = chalk.green(typeLabel);
+		color = 'green';
 	} else if (typeLabel === 'Log') {
 		typeLabel = chalk.gray(typeLabel);
+		color = 'gray';
 	}
 
 	// used to avoid logging "undefined" in the console
-	if (data) {
-		console[type](typeLabel + ':', chalk.cyan(label), data);
+	if (useTypeLabels) {
+		label = typeLabel + ': ' + chalk.cyan(label);
 	} else {
-		console[type](typeLabel + ':', chalk.cyan(label));
+		label = chalk[color](label);
+	}
+	if (data) {
+		console[type](label, data);
+	} else {
+		console[type](label);
 	}
 }
+
+/**
+ * Initialize the reqlog module
+ * @method function
+ * @param  {bollean} typeLabels Enable or disable typeLabels
+ */
+exports.init = function(typeLabels) {
+	useTypeLabels = Boolean(typeLabels);
+};
 
 exports.log = function(label, data) {
 	log('log', label, data);
@@ -48,20 +69,20 @@ exports.warn = function(label, data) {
 
 // on each request start, we create the reqlog attribute on req
 // and start the profiling
-exports.start = function(req, res, next) {
+exports.start = function(req, res) {
 	req.reqlog = {
 		profiling: {
 			start: (new Date()).getTime()
 		}
 	};
-	GLOBAL.log('');
-	GLOBAL.log(req.method, req.originalUrl);
+
+	this.info('Request ' + req.method, req.url);
+
+	var self = this;
 	res.on('finish', function() {
 		req.reqlog.profiling.end = (new Date()).getTime();
 		req.reqlog.profiling.time = req.reqlog.profiling.end -
 			req.reqlog.profiling.start;
-		GLOBAL.log('END', req.reqlog.profiling.time);
+		self.log('END', req.reqlog.profiling.time);
 	});
-
-	next();
 };
