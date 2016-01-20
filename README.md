@@ -43,7 +43,6 @@ var errorData = {
 	}
 };
 
-var reqlog = require('reqlog');
 reqlog.log('Endpoint', 'users/search');
 reqlog.warn('UserSearch', 'NOT_FOUND');
 reqlog.error('Internal Server Error', errorData);
